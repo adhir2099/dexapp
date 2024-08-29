@@ -11,7 +11,7 @@
 <p>Clone the repository</p>
 
 ```bash
-git clone https://github.com/adhir2099/dex-app.git
+git clone https://github.com/adhir2099/poke-dex-app.git
 ```
 **Running the Project**
 <p>Head to it</p>
