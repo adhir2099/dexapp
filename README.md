@@ -1,5 +1,12 @@
 <h1 align="center"> DEX-APP</h1>
 
+## Demo URL
+<p align="left">
+  <a href="https://poke-dex-app-two.vercel.app/" target="_blank">
+    👉<b>Visit demo here</b>
+  </a>
+</p>
+
 ## Frontend
 <p align="left">
   <a href="https://skillicons.dev">
