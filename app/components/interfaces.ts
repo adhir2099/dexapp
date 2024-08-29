@@ -14,7 +14,7 @@ export interface PokemonDetails {
     abilities: { ability: { name: string } }[];
     sprites: {
         front_default: string;
-        other: { 'official-artwork': { front_default: string } };
+        other: { 'official-artwork': { front_default: string; front_shiny: string } };
         front_shiny: string;
     };
 }
