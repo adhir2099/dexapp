@@ -18,6 +18,17 @@ const Main: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [evolutions, setEvolutions] = useState<Pokemon[]>([]);
   const [isShiny, setIsShiny] = useState(false);
+  const [generationData, setGenerationData] = useState<Pokemon[][]>([]);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedPokemon(null);
+    setEvolutions([]);
+  };
+
+  const toggleShiny = () => {
+    setIsShiny(prevIsShiny => !prevIsShiny);
+  };
 
   useEffect(() => {
     const loadInitialPokemon = async () => {
@@ -143,15 +154,64 @@ const Main: React.FC = () => {
     }
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedPokemon(null);
-    setEvolutions([]);
+  const fetchGenerationData = async () => {
+    try {
+      const allGenerationsData = await Promise.all(
+        [...Array(9)].map(async (_, index) => {
+          const response = await axios.get(`https://pokeapi.co/api/v2/generation/${index + 1}`);
+          const pokemonSpecies = response.data.pokemon_species;
+  
+          const pokemonList = await Promise.all(
+            pokemonSpecies.map(async (species: any) => {
+              const pokemonDetails = await axios.get(species.url.replace('-species', ''));
+              return {
+                id: pokemonDetails.data.id,
+                name: species.name,
+                url: `https://pokeapi.co/api/v2/pokemon/${species.name}`,
+                imageUrl: pokemonDetails.data.sprites.other['official-artwork'].front_default,
+              };
+            })
+          );
+  
+          const sortedPokemonList = sortByPokemonNumber(pokemonList);
+  
+          return sortedPokemonList;
+        })
+      );
+  
+      setGenerationData(allGenerationsData);
+    } catch (error) {
+      console.error('Failed to fetch generation data:', error);
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchGenerationData();
+  }, []);
+
+  const handlePokemonSelect = async (pokemonUrl: string) => {
+    try {
+      const response = await axios.get(pokemonUrl);
+      const pokemonDetails = response.data;
+
+      const selectedPokemon = {
+        id: pokemonDetails.id,
+        name: pokemonDetails.name,
+        url: pokemonUrl,
+        imageUrl: pokemonDetails.sprites.other['official-artwork'].front_default,
+      };
+
+      setFilteredPokemonList([selectedPokemon]);
+    } catch (error) {
+      console.error('Failed to fetch Pokémon details:', error);
+      setFilteredPokemonList([]);
+    }
   };
 
-  const toggleShiny = () => {
-    setIsShiny(prevIsShiny => !prevIsShiny);
-  };
+  const sortByPokemonNumber = (pokemonList: Pokemon[]) => {
+    return pokemonList.sort((a, b) => a.id - b.id);
+  };  
 
   return (
     <div className="min-h-screen bg-gray-500 p-4">
@@ -168,6 +228,22 @@ const Main: React.FC = () => {
             icon={faSearch}
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
           />
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 mb-4">
+          {generationData.map((generation, genIndex) => (
+            <select
+              key={genIndex}
+              className="bg-gray-800 text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              onChange={(e) => handlePokemonSelect(e.target.value)}
+            >
+              {generation.map((pokemon, index) => (
+                <option key={index} value={pokemon.url}>
+                  {`${ pokemon.id +' '+ pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}`}
+                </option>
+              ))}
+            </select>
+          ))}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">

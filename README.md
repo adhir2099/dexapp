@@ -1,4 +1,4 @@
-<h1 align="center"> DEX-APP</h1>
+<h1 align="center"> DEXAPP</h1>
 
 ## Demo URL
 <p align="left">
@@ -30,17 +30,33 @@ npm run dev
 ```
 # Versions
 <p>Node version v22.6.0</p>
+
+```bash
+node -v
+```
 <p>Next version v14.2.5</p>
+
+```bash
+npx next --version
+```
+
+<p>Open your favorite browser</p>
+
+```bash
+http://localhost:3000
+```
 
 # 🔋Features
 
-👉 **PokéAPI**: We´re using <a href="https://pokeapi.co/" target="_blank">PokéAPI</a> to fetch data (Visit them and give 'em a lot of love)
+👉 **PokéAPI**: We're using <a href="https://pokeapi.co/" target="_blank">PokéAPI</a> to fetch data (Visit them and give 'em a lot of love)
 
-👉 **Responsive**: Responsive view
+👉 **Responsive**
 
 👉 **Search**: Search by Pokédex entry or name
 
 👉 **Infinite scrolling**
+
+👉 **Generations**: Search by Generations from 1 to 9
 
 <h3 align="left">Get in touch with me:</h3>
 <p align="left">
