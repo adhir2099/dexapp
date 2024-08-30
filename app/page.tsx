@@ -351,9 +351,9 @@ const Main: React.FC = () => {
               </div>
               <div className="mt-6">
                 <h3 className="text-white text-xl text-center mb-4">Evolutions</h3>
-                <div className="flex justify-center space-x-4 border rounded-lg outline-inherit ring-inherit shadow-2xl opacity-100 ring-offset-slate-50 dark:ring-offset-slate-900">
+                <div className="flex flex-wrap justify-center space-x-4 border rounded-lg outline-inherit ring-inherit shadow-2xl opacity-100 ring-offset-slate-50 dark:ring-offset-slate-900">
                   {evolutions.map((evolution, index) => (
-                    <div key={index} className="text-center">
+                    <div key={index} className="text-center flex-none m-2">
                       <Image
                         src={evolution.imageUrl}
                         alt={evolution.name}
