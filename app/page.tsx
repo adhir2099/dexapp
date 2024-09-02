@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faTimes, faWeight, faRulerVertical, faStarHalfAlt, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faTimes, faWeight, faRulerVertical, faStarHalfAlt, faStar, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css'; 
-import { EvolutionChain, Pokemon, PokemonDetails } from './components/interfaces';
+import { EvolutionChain, Pokemon } from './components/interfaces';
+import { useModalAndShiny } from './components/hooks/useModalandShiny';
+import { useErrorHandling } from './components/hooks/useErrorHandling';
 
 const Main: React.FC = () => {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
@@ -14,21 +16,23 @@ const Main: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [offset, setOffset] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPokemon, setSelectedPokemon] = useState<PokemonDetails | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [evolutions, setEvolutions] = useState<Pokemon[]>([]);
-  const [isShiny, setIsShiny] = useState(false);
   const [generationData, setGenerationData] = useState<Pokemon[][]>([]);
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedPokemon(null);
-    setEvolutions([]);
-  };
+  const {
+    isModalOpen,
+    selectedPokemon,
+    evolutions,
+    isShiny,
+    closeModal,
+    toggleShiny,
+    openModal,
+  } = useModalAndShiny();
 
-  const toggleShiny = () => {
-    setIsShiny(prevIsShiny => !prevIsShiny);
-  };
+  const { 
+    errorMessage,
+    handleError,
+     clearError 
+  } = useErrorHandling();
 
   useEffect(() => {
     const loadInitialPokemon = async () => {
@@ -145,12 +149,11 @@ const Main: React.FC = () => {
       const speciesResponse = await axios.get(response.data.species.url);
       const evolutionChainUrl = speciesResponse.data.evolution_chain.url;
       const evolutionData = await fetchEvolutionChain(evolutionChainUrl);
-
-      setSelectedPokemon(response.data);
-      setEvolutions(evolutionData);
-      setIsModalOpen(true);
+  
+      openModal(response.data, evolutionData);
+      clearError();
     } catch (error) {
-      console.error('Failed to fetch Pokémon details:', error);
+      handleError(error, 'Failed to fetch Pokémon details. Please try again.');
     }
   };
 
@@ -213,9 +216,26 @@ const Main: React.FC = () => {
     return pokemonList.sort((a, b) => a.id - b.id);
   };  
 
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setFilteredPokemonList(pokemonList);
+  };
+
   return (
     <div className="min-h-screen bg-gray-500 p-4">
+
       <div className="max-w-2xl mx-auto">
+        {errorMessage && (
+          <div role="alert" className='mb-4'>
+            <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+              Error
+            </div>
+            <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+              <p>{errorMessage}</p>
+            </div>
+          </div>
+        )}
+
         <div className="relative mb-4">
           <input
             type="text"
@@ -229,7 +249,7 @@ const Main: React.FC = () => {
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
           />
         </div>
-
+        
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 mb-4">
           {generationData.map((generation, genIndex) => (
             <select
@@ -244,6 +264,12 @@ const Main: React.FC = () => {
               ))}
             </select>
           ))}
+        </div>
+
+        <div className="flex items-center justify-center mb-4">
+          <button onClick={handleClearSearch} className="ml-2 p-2 w-3/4 bg-green-500 text-white rounded hover:bg-green-700">
+              Clear
+          </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
@@ -272,7 +298,10 @@ const Main: React.FC = () => {
         </div>
 
         {isLoading && (
-          <div className="text-center text-white mt-4">Loading more Pokémon...</div>
+          <div className="text-center text-white mt-4">
+            Loading more Pokémon...
+            <FontAwesomeIcon icon={faSpinner} spin className="text-2xl text-gray-500" />
+          </div>
         )}
       </div>
         

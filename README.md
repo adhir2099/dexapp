@@ -58,6 +58,8 @@ http://localhost:3000
 
 👉 **Generations**: Search by Generations from 1 to 9
 
+👉 **Custom Hooks** : More hooks will be added
+
 <h3 align="left">Get in touch with me:</h3>
 <p align="left">
 <a href="https://www.linkedin.com/in/adhir-serrano/" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="adhir2099" height="30" width="40" /></a>
